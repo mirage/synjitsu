@@ -12,9 +12,11 @@ module Main (C: CONSOLE) (S: STACKV4) = struct
       ) s;
     s
 
-  let xs_key k =
-    let k = "/ip/" ^ k in
-    mutate_string (function '.' -> '-' | x   -> x) k
+  let xs_key = function
+    | "" -> "/ip"
+    | k  ->
+      let k = "/ip/" ^ k in
+      mutate_string (function '.' -> '-' | x   -> x) k
 
   let safe_read h k =
     Lwt.catch
