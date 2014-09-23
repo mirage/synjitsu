@@ -4,10 +4,10 @@ all: proxy fast-start
 	@
 
 proxy:
-	cd proxy && mirage configure --xen && make
+	cd proxy && mirage configure --xen
 
 fast-start:
-	cd fast-start && mirage configure --xen && make
+	cd fast-start && mirage configure --xen
 
 init:
 	xenstore-write /ip ""
