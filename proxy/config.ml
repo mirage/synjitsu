@@ -20,14 +20,12 @@ let () =
         "mirage-conduit" ;
         "cstruct" ;
         "mirage-" ^ platform;
-        "mirage-vnetif" ;
         "mirage-net-" ^ platform;
         "mirage-clock-" ^ platform;
         "mirage-" ^ platform;
         "mirage-types" ;
         "tcpip" ];
     add_to_ocamlfind_libraries [
-        "mirage-vnetif" ;
         "mirage-net-" ^ platform ;
         "mirage-" ^ platform;
         "mirage-clock-" ^ platform;
