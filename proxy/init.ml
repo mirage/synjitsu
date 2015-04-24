@@ -63,17 +63,20 @@ module Main (C: CONSOLE) (S: STACKV4) = struct
 
   let start c s =
     OS.Xs.make () >>= fun xs ->
-    let module KV: Tcpv4.Pcb.KV.S = struct
+    let module KV: Tcp.Pcb.KV.S = struct
       let read = read c xs
       let write = write c xs
       let remove = remove c xs
       let watch = watch c xs
       let directory = directory c xs
     end in
-    Tcpv4.Pcb.KV.set (module KV);
-    let ip = S.IPV4.get_ipv4 (S.ipv4 s) in
-    C.log_s c  (sprintf "IP address: %s\n" (Ipaddr.V4.to_string ip))
+    Tcp.Pcb.KV.set (module KV);
+    (* TODO Support ipv6 *)
+    let ips = S.IPV4.get_ip (S.ipv4 s) in
+    Lwt_list.iter_s (fun ip ->
+        C.log_s c  (sprintf "IP address: %s\n" (Ipaddr.V4.to_string ip))) 
+        ips
     >>= fun () ->
-    return ip
+    return ips
 
 end
