@@ -1,6 +1,6 @@
 open Mirage
 
-let main = foreign "Proxy.Main" (console @-> stackv4 @-> job)
+let main = foreign "Synjitsu.Main" (console @-> network @-> stackv4 @-> job)
 
 let ipv4_config =
   let address = Ipaddr.V4.of_string_exn "192.168.2.140" in
@@ -10,5 +10,31 @@ let ipv4_config =
 
 let stack = direct_stackv4_with_static_ipv4 default_console tap0 ipv4_config
 
+let platform =
+    match get_mode () with
+        | `Xen -> "xen"
+        | _ -> "unix"
+
 let () =
-  register "synjitsu" [ main $ default_console $ stack ]
+    add_to_opam_packages [
+        "mirage-conduit" ;
+        "cstruct" ;
+        "mirage-" ^ platform;
+        "mirage-vnetif" ;
+        "mirage-net-" ^ platform;
+        "mirage-clock-" ^ platform;
+        "mirage-" ^ platform;
+        "mirage-types" ;
+        "tcpip" ];
+    add_to_ocamlfind_libraries [
+        "mirage-vnetif" ;
+        "mirage-net-" ^ platform ;
+        "mirage-" ^ platform;
+        "mirage-clock-" ^ platform;
+        "tcpip.stack-direct" ;
+        "cstruct" ;
+        "cstruct.syntax" ;
+        "conduit" ;
+        "conduit.mirage-xen" ;
+        "mirage-types" ];
+    register "synjitsu" [ main $ default_console $ tap0 $ stack ]
