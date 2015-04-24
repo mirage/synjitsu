@@ -11,28 +11,28 @@ let ipv4_config =
 let stack = direct_stackv4_with_static_ipv4 default_console tap0 ipv4_config
 
 let platform =
-    match get_mode () with
-        | `Xen -> "xen"
-        | _ -> "unix"
+  match get_mode () with
+  | `Xen -> "xen"
+  | _ -> "unix"
 
 let () =
-    add_to_opam_packages [
-        "mirage-conduit" ;
-        "cstruct" ;
-        "mirage-" ^ platform;
-        "mirage-net-" ^ platform;
-        "mirage-clock-" ^ platform;
-        "mirage-" ^ platform;
-        "mirage-types" ;
-        "tcpip" ];
-    add_to_ocamlfind_libraries [
-        "mirage-net-" ^ platform ;
-        "mirage-" ^ platform;
-        "mirage-clock-" ^ platform;
-        "tcpip.stack-direct" ;
-        "cstruct" ;
-        "cstruct.syntax" ;
-        "conduit" ;
-        "conduit.mirage-xen" ;
-        "mirage-types" ];
-    register "synjitsu" [ main $ default_console $ tap0 $ stack ]
+  add_to_opam_packages [
+    "mirage-conduit" ;
+    "cstruct" ;
+    "mirage-" ^ platform;
+    "mirage-net-" ^ platform;
+    "mirage-clock-" ^ platform;
+    "mirage-" ^ platform;
+    "mirage-types" ;
+    "tcpip" ];
+  add_to_ocamlfind_libraries [
+    "mirage-net-" ^ platform ;
+    "mirage-" ^ platform;
+    "mirage-clock-" ^ platform;
+    "tcpip.stack-direct" ;
+    "cstruct" ;
+    "cstruct.syntax" ;
+    "conduit" ;
+    "conduit.mirage-xen" ;
+    "mirage-types" ];
+  register "synjitsu" [ main $ default_console $ tap0 $ stack ]
