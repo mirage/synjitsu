@@ -77,10 +77,11 @@ module Main (C : V1_LWT.CONSOLE)(N : V1_LWT.NETWORK)(S : V1_LWT.STACKV4) = struc
     S.listen_tcpv4 s (-1) (fun _ -> return_unit);
     S.listen s
 
+  let () = Tcp.Pcb.set_mode `Synjitsu
+
   let start c n s =
 
     (* Set synjitsu proxy mode *)
-    Tcp.Pcb.set_mode `Synjitsu;
     I.start c s >>= fun _ip ->
 
     (* clean-up previous proxy state *)

@@ -56,15 +56,14 @@ module Main (C: CONSOLE) (S: STACKV4) = struct
   let start c s =
     OS.Xs.make () >>= fun xs ->
     let module KV: Tcp.KV.S = struct
-      type t = unit
       type step = string
       type key = string list
       type value = string
-      let create () = Lwt.return_unit
-      let read () = read c xs
-      let writev () = writev c xs
-      let remove () = remove c xs
-      let dirs () = dirs c xs
+      let create= Lwt.return_unit
+      let read = read c xs
+      let writev = writev c xs
+      let remove = remove c xs
+      let dirs = dirs c xs
     end in
     Tcp.KV.Global.set (module KV);
     let ips = S.IPV4.get_ip (S.ipv4 s) in
