@@ -16,5 +16,5 @@ make
 #   (i) uncomment the VIF line; and
 #  (ii) set the memory to 16 (instead of 256)
 xl create -c proxy/synjitsu.xl
-xl create -c fast-start/fast-start.xl
+xl create -c app/app.xl
 ```

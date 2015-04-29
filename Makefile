@@ -1,13 +1,13 @@
-.PHONY: all clean proxy start init clean
+.PHONY: all clean app proxy start init clean
 
-all: proxy fast-start
-	@
+all:
+	$(MAKE) proxy; $(MAKE) app
 
 proxy:
 	cd proxy && mirage configure --xen && make
 
-fast-start:
-	cd fast-start && mirage configure --xen && make
+app:
+	cd app && mirage configure --xen && make
 
 init:
 	xenstore-write /ip ""
