@@ -9,7 +9,7 @@ opam pin add xen-gnt git://github.com/djs55/ocaml-gnt#minios-gntmap
 
 Mandatory:
 ```
-opam pin add tcpip https://github.com/samoht/mirage-tcpip#synjitsu
+opam pin add tcpip https://github.com/samoht/mirage-tcpip.git#synjistu
 sudo make init
 make
 # Edit the .xl files to:
