@@ -15,4 +15,4 @@ init:
 
 clean:
 	make -C proxy clean
-	make -C fast-start clean
+	make -C app clean
