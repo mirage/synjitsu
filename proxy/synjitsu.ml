@@ -80,14 +80,14 @@ module Main (C : V1_LWT.CONSOLE)(N : V1_LWT.NETWORK)(S : V1_LWT.STACKV4) = struc
   let start c n s =
 
     (* Set synjitsu proxy mode *)
-    Tcp.Pcb.set_mode `Fast_start_proxy;
+    Tcp.Pcb.set_mode `Synjitsu;
     I.start c s >>= fun _ip ->
 
     (* clean-up previous proxy state *)
     OS.Xs.make () >>= fun xs ->
-    I.directory c xs "" >>= fun dirs ->
+    I.dirs c xs [] >>= fun dirs ->
 
-    Lwt_list.iter_p (I.remove c xs) dirs >>= fun () ->
+    Lwt_list.iter_p (fun ip -> I.remove c xs [ip]) dirs >>= fun () ->
 
     E.connect n >>= fun ethif ->
     match ethif with
