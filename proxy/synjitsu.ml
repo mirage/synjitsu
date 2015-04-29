@@ -15,7 +15,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *)
 
-open Lwt 
+open Lwt
 open Printf
 open String
 open Conduit
@@ -36,19 +36,19 @@ module Main (C : V1_LWT.CONSOLE)(N : V1_LWT.NETWORK)(S : V1_LWT.STACKV4) = struc
     fn t
     >>= function
     | `Error e -> fail (Failure ("Error starting " ^ name))
-    | `Ok t -> return t 
+    | `Ok t -> return t
 
-  let listen_callback c ethif flow ic oc = 
+  let listen_callback c ethif flow ic oc =
     C.log_s c "Client connected." >>= fun () ->
     let rec print () =
       CON.Flow.read flow >>= fun r ->
       match r with
-      | `Ok buf -> 
+      | `Ok buf ->
         let ip = Ipaddr.V4.of_int32 (get_arpip_ip buf) in
         let mac = Macaddr.of_bytes (Cstruct.to_string (get_arpip_mac buf)) in
         (match mac with
          | None -> C.log_s c "Unable to parse ARP data. Internal error."
-         | Some m -> C.log_s c (Printf.sprintf "Got mac=%s for ip=%s. Sending gratuitous ARP..." (Macaddr.to_string m) (Ipaddr.V4.to_string ip)) >>= fun () -> 
+         | Some m -> C.log_s c (Printf.sprintf "Got mac=%s for ip=%s. Sending gratuitous ARP..." (Macaddr.to_string m) (Ipaddr.V4.to_string ip)) >>= fun () ->
            Garp.output_garp ethif m [ip]
         ) >>= fun () -> print ()
       | `Eof -> C.log_s c "Connection closed."
@@ -64,7 +64,7 @@ module Main (C : V1_LWT.CONSOLE)(N : V1_LWT.NETWORK)(S : V1_LWT.STACKV4) = struc
       CON.init () >>= fun ctx ->
       C.log_s c (Printf.sprintf "Listening for connections from dom 0 on port '%s'" port_s) >>= fun () ->
       Conduit_xenstore.register "synjitsu" >>= fun t ->
-      let rec aux () = 
+      let rec aux () =
         CON.serve ~ctx ~mode:server (callback c ethif) >>= fun () ->
         C.log_s c "Serve exited. Restarting." >>= fun () ->
         aux () in
@@ -92,7 +92,7 @@ module Main (C : V1_LWT.CONSOLE)(N : V1_LWT.NETWORK)(S : V1_LWT.STACKV4) = struc
     E.connect n >>= fun ethif ->
     match ethif with
     | `Error err -> C.log_s c "Unable to connect to Ethif. Exiting"
-    | `Ok ethif -> 
+    | `Ok ethif ->
       begin
         let rec tick i () =
           OS.Time.sleep 10.0 >>= fun () ->
@@ -105,7 +105,7 @@ module Main (C : V1_LWT.CONSOLE)(N : V1_LWT.NETWORK)(S : V1_LWT.STACKV4) = struc
           conduit_serve c ethif listen_callback () ; (* garp *)
           proxy_listen c s (* SYNs *)
         ]
-      end 
+      end
       >>= fun () ->
       Lwt.return_unit (* exit cleanly *)
 
