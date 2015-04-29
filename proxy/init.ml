@@ -25,12 +25,12 @@ module Main (C: CONSOLE) (S: STACKV4) = struct
 
   let read c xs k =
     let k = xs_key k in
-    C.log_s c (sprintf "read %s\n" k) >>= fun () ->
+    C.log_s c (sprintf "read %s" k) >>= fun () ->
     OS.Xs.(immediate xs (fun h -> safe_read h k))
 
   let remove c xs k =
     let k = xs_key k in
-    C.log_s c (sprintf "remove %s\n" k) >>= fun () ->
+    C.log_s c (sprintf "remove %s" k) >>= fun () ->
     OS.Xs.(immediate xs (fun h -> rm h k))
 
   let writev c xs kvs =
@@ -38,15 +38,16 @@ module Main (C: CONSOLE) (S: STACKV4) = struct
     let str =
       String.concat " " (List.map (fun (k, v) -> sprintf "%s:%s" k v) kvs)
     in
-    C.log_s c (sprintf "write %s\n" str) >>= fun () ->
+    C.log_s c (sprintf "write %s" str) >>= fun () ->
     OS.Xs.(transaction xs (fun h ->
         Lwt_list.iter_p (fun (k, v) -> write h k v) kvs
       ))
 
   let dirs c xs k =
     let k = xs_key k in
-    C.log_s c (sprintf "directory %s\n" k) >>= fun () ->
+    C.log_s c (sprintf "directory %s" k) >>= fun () ->
     OS.Xs.(immediate xs (fun h -> directory h k)) >>= fun dirs ->
+    let dirs = List.filter ((<>)"") dirs in
     List.map (fun dir ->
         mutate_string (function '-' -> '.' | c -> c) dir
       ) dirs

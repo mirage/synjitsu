@@ -1,4 +1,4 @@
-PKG mirage tcpip xenstore mirage-xen mirage-types
+PKG mirage tcpip xenstore mirage-xen mirage-types conduit
 
 B proxy/_build/**
 S proxy/
