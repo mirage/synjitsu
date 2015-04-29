@@ -13,9 +13,9 @@ module Main (C: CONSOLE) (S: STACKV4) = struct
     s
 
   let xs_key = function
-    | "" -> "/ip"
+    | [] -> "/ip"
     | k  ->
-      let k = "/ip/" ^ k in
+      let k = "/ip/" ^ String.concat "/" k in
       mutate_string (function '.' -> '-' | x   -> x) k
 
   let safe_read h k =
@@ -33,7 +33,7 @@ module Main (C: CONSOLE) (S: STACKV4) = struct
     C.log_s c (sprintf "remove %s\n" k) >>= fun () ->
     OS.Xs.(immediate xs (fun h -> rm h k))
 
-  let write c xs kvs =
+  let writev c xs kvs =
     let kvs = List.map (fun (k, v) -> xs_key k, v) kvs in
     let str =
       String.concat " " (List.map (fun (k, v) -> sprintf "%s:%s" k v) kvs)
@@ -43,16 +43,7 @@ module Main (C: CONSOLE) (S: STACKV4) = struct
         Lwt_list.iter_p (fun (k, v) -> write h k v) kvs
       ))
 
-  let watch c xs k =
-    let k = xs_key k in
-    C.log_s c (sprintf "watch %s\n" k) >>= fun () ->
-    OS.Xs.(wait xs (fun h ->
-        safe_read h k >>= function
-        | None   -> fail Xs_protocol.Eagain
-        | Some _ -> return_unit
-      ))
-
-  let directory c xs k =
+  let dirs c xs k =
     let k = xs_key k in
     C.log_s c (sprintf "directory %s\n" k) >>= fun () ->
     OS.Xs.(immediate xs (fun h -> directory h k)) >>= fun dirs ->
@@ -63,20 +54,21 @@ module Main (C: CONSOLE) (S: STACKV4) = struct
 
   let start c s =
     OS.Xs.make () >>= fun xs ->
-    let module KV: Tcp.Pcb.KV.S = struct
-      let read = read c xs
-      let write = write c xs
-      let remove = remove c xs
-      let watch = watch c xs
-      let directory = directory c xs
+    let module KV: Tcp.KV.S = struct
+      type t = unit
+      type step = string
+      type key = string list
+      type value = string
+      let create () = Lwt.return_unit
+      let read () = read c xs
+      let writev () = writev c xs
+      let remove () = remove c xs
+      let dirs () = dirs c xs
     end in
-    Tcp.Pcb.KV.set (module KV);
-    (* TODO Support ipv6 *)
+    Tcp.KV.Global.set (module KV);
     let ips = S.IPV4.get_ip (S.ipv4 s) in
-    Lwt_list.iter_s (fun ip ->
-        C.log_s c  (sprintf "IP address: %s\n" (Ipaddr.V4.to_string ip))) 
-        ips
-    >>= fun () ->
+    let ips_str = String.concat ", " (List.map Ipaddr.V4.to_string ips) in
+    C.log_s c  (sprintf "IP address: %s\n" ips_str) >>= fun () ->
     return ips
 
 end

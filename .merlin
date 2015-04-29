@@ -1,1 +1,5 @@
-PKG mirage tcpip xenstore mirage-xen
+PKG mirage tcpip xenstore mirage-xen mirage-types
+B proxy/_build/**
+B fast-start/_build/**
+S proxy/
+S fast-start/
