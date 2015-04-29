@@ -14,5 +14,5 @@ init:
 	xenstore-chmod /ip b0
 
 clean:
-	make -C proxy clean
-	make -C app clean
+	if [ -f proxy/Makefile ]; then make -C proxy clean; rm proxy/Makefile; fi
+	if [ -f app/Makefile ]; then make -C app clean; rm app/Makefile; fi
