@@ -1,7 +1,7 @@
 .PHONY: all clean app synjitsu start init clean
 
 all:
-	$(MAKE) proxy; $(MAKE) app
+	$(MAKE) synjitsu; $(MAKE) app
 
 synjitsu:
 	cd synjitsu && mirage configure --xen && make
