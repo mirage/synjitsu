@@ -88,7 +88,7 @@ module Main (C : V1_LWT.CONSOLE)(N : V1_LWT.NETWORK)(S : V1_LWT.STACKV4) = struc
     OS.Xs.make () >>= fun xs ->
     I.dirs c xs [] >>= fun dirs ->
 
-    Lwt_list.iter_p (I.remove c xs) dirs >>= fun () ->
+    Lwt_list.iter_p (fun ip -> I.remove c xs [ip]) dirs >>= fun () ->
 
     E.connect n >>= fun ethif ->
     match ethif with
