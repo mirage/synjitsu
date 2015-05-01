@@ -47,7 +47,7 @@ module Make(Ethif : V1_LWT.ETHIF) = struct
 
   let output t arp =
     (* Obtain a buffer to write into *)
-    let buf = Cstruct.create sizeof_arp in
+    let buf = Io_page.to_cstruct (Io_page.get 1) in
     (* Write the ARP packet *)
     let dmac = Macaddr.to_bytes arp.tha in
     let smac = Macaddr.to_bytes arp.sha in
